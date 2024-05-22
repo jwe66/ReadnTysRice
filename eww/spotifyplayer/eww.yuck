@@ -1,0 +1,147 @@
+(defvar eww1 "/bin/eww -c $HOME/.config/eww")
+(deflisten tel 
+          :initial '{ "isRunning": "false", "status": "Stopped", "artist": "", "title": "", "album": "", "length": "00:00", "lengthRaw": 0, "position": "00:00", "positionRaw": 0, "albumArt": "assets/currents.jpg" }' 
+          "scripts/spotify3 spotify")
+;; Album Cover
+(defwidget album_cover []
+  (box      :class "spt_album_cover"
+            :valign "start"
+    (image  :path {tel.albumArt}
+            :image-width 300)))
+
+;; Song Telemetry
+(defwidget spt_song_name_artist_tel []
+  (box      :class "spt_song_tel"
+            :orientation "v"
+            :valign "start"
+    (box    :class "sont_name"
+            "${tel.title}")
+    (box    :class "song_artist"
+            "${tel.artist}")))
+
+;; Spotify Pannel
+(defwidget spt_pannel []
+  (box      :orientation "h"
+            :class "spt_pannel"
+            :valign "start"
+            :space-evenly "false"
+            :halign "center"
+  (eventbox :onclick "scripts/spotify spotify toggle_shuffle"
+    (image  :path {spt_play_state == "true" ? "assets/shuffle-on-fill.svg" : "assets/shuffle-line.svg"}
+            :halign "start"
+            :class "spt_shuffle_${shuffle}"
+            :image-width 20))
+  (box      :class "spt_controls"
+            :halign "center"
+  (eventbox :onclick "scripts/spotify spotify previous"
+    (image  :path "assets/skip-left-line.svg"))
+  (eventbox :onclick "scripts/spotify spotify play-pause"
+    (image  :path {spt_play_state == "true" ? "assets/pause-line.svg" : "assets/play-line.svg"}
+            :class "spt_pause"))
+  (eventbox :onclick "scripts/spotify spotify next"
+    (image  :path "assets/skip-right-line.svg")))
+  (eventbox :halign "end"
+    (image  :path "assets/list-indefinite.svg"
+            :class "spt_queue"))))
+(deflisten shuffle "[[ $(playerctl -p spotify shuffle) == 'On' ]] && echo true || echo false")
+
+(defwidget spt_time []
+  (box      :orientation "v"
+    (eventbox
+            :onhover "${eww} update hovered=true"
+            :onhoverlost "${eww} update hovered=false"
+            :onhover "${eww1} update spt_knob_width=3 hovered=true"
+            :onhoverlost "${eww1} update spt_knob_width=4 hovered=false"
+      (better_slider
+            :min 0
+            :max {tel.length}
+            :value "${((mouse.pressed && hovered) || tel.time_changing) ? val1 : tel.position}"
+            :class "music"
+            :orientation "h"
+            :width 300
+            :flipped false
+            :timeout "100ms"
+            :onchange "${eww1} update val1={} && echo {} > /tmp/eww/spt_position";; && kill -SIGUSR1 ${tel.pid}"
+            :knob_width spt_knob_width
+            :height 3))
+    (box    :orientation "h"
+            :class "spt_time_numbers"
+      (box  :space-evenly false
+        {tel.position_formatted})
+      (box  :space-evenly false
+            :halign "end"
+        {tel.length_formatted}))))
+(defvar spt_knob_width 3)
+(defvar music_value 0)
+(defpoll spt_play_state :interval "1s" "[[ 'Playing' = $(playerctl -p spotify status) ]] && echo true || echo false")
+
+(defwidget spt_volume []
+  (box      :orientation "v"
+    (eventbox
+            :onhover "${eww} update hovered=true"
+            :onhoverlost "${eww} update hovered=false"
+            :onhover "${eww1} update spt_knob_width=3 hovered=true"
+            :onhoverlost "${eww1} update spt_knob_width=4 hovered=false"
+    (better_slider
+            :min 0
+            :max {tel.length}
+            :value "${(mouse.pressed && hovered) ? val1 : tel.position}"
+            :class "spt_volume"
+            :orientation "h"
+            :width 300
+            :flipped false
+            :timeout "100ms"
+            :onchange "${eww1} update val1={} && echo {} > /tmp/eww/spt_position && kill -SIGUSR1 ${tel.pid}"
+            :knob_width spt_knob_width
+            :height 3))
+    (box    :orientation "h"
+            :class "spt_time_numbers"
+      (box  :space-evenly false
+        {tel.position_formatted})
+      (box  :space-evenly false
+            :halign "end"
+        {tel.length_formatted}))))
+(deflisten mouse :initial '{ "pressed": "false" }' '/bin/bash scripts/mouse_pressed & tail -F /tmp/eww/mouse_pressed 2>/dev/null')
+
+
+;; Combining everything together
+(defwidget spt []
+  (box    :class "spt_background_image"
+          :style "background-image: url('${tel.albumArtBlurred}')"
+  (box    :class "spt_background"
+  (box    :class "spt_widget"
+          :orientation "v"
+          :vexpand "false"
+          :hexpand "false"
+          :space-evenly "false"
+    (album_cover)
+    (spt_song_name_artist_tel)
+    (spt_pannel)
+    (spt_time)
+    {spt_x_position}))))
+
+(deflisten spt_x_position :initial "0" "scripts/animation 10 0.2")
+;; The Window
+(defwindow spt
+  :class "spt"
+  :monitor 0 :exclusive false
+  :windowtype "normal"
+  :stacking "fg"
+  :wm-ignore "true"
+  ;; :geometry (geometry :x "64px"
+  ;;                     :y "302px"
+  ;;                     :width "348px"
+  ;;                     :height "550px"
+  ;;                     :anchor "top left")
+  :geometry (geometry :x "-350px"
+                      :y "302px"
+                      :width "760px"
+                      :height "550px"
+                      :anchor "top left")
+  (revealer :reveal spt_spawn
+            :duration "500ms"
+            :transition "crossfade"
+    (box    :space-evenly "false"
+      (box  :style "min-width: ${412 * spt_x_position.value}px")
+      (spt))))
+(defvar spt_spawn false)

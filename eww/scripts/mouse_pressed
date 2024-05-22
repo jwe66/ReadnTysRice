@@ -1,0 +1,10 @@
+#!/bin/bash
+input="false"
+libinput debug-events | while read -r line; do
+    if [[ $line == *"BTN_LEFT"* && $line == *"pressed"* ]]; then
+        input="true"
+    elif [[ $line == *"BTN_LEFT"* && $line == *"released"* ]]; then
+        input="false"
+    fi
+    echo '{ "pressed": "'$input'" }' > /tmp/eww/mouse_pressed
+done 

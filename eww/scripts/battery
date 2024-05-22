@@ -1,0 +1,66 @@
+#!/bin/sh
+
+bat=/sys/class/power_supply/BAT0/
+per="$(cat "$bat/capacity")"
+
+icon() {
+
+[ $(cat "$bat/status") = Charging ] && echo "assets/battery-charge-line-green.svg" && exit
+
+# if [ "$per" -gt "90" ]; then
+case $per in 
+  100|[8-9][0-9])
+    icon="assets/battery-fully-charged-green.svg"
+    icon="assets/battery-fully-charged-green.svg"
+    ;;
+  7[0-9])
+    icon="assets/battery-60or70percent.svg"
+    ;;
+  6[0-9])
+    icon="assets/battery-40or50percent.svg"
+    ;;
+  5[0-9])
+    icon="assets/battery-40or50percent.svg"
+    ;;
+  4[0-9])
+    icon="assets/battery-40or50percent.svg"
+    ;;
+  30|[2-3][1-9])
+    icon="assets/battery-20or30percent.svg"
+    ;;
+  20|1[0-9])
+    icon="assets/battery-low-battery.svg"
+    ;;
+  [0-9])
+    icon="assets/battery-low-battery-empty.svg"
+    ;;
+  *)
+    echo "assets/battery-low-battery-empty.svg" && exit
+    ;;
+esac
+echo "$icon"
+}
+
+percent() {
+  echo $per
+}
+
+color() {
+
+  [ $(cat "$bat/status") = Charging ] && echo "#67E480" && exit
+
+
+  if [ "$per" -ge "80" ]; then
+    color="#67E480"
+  elif [ "$per" -gt "20" ]; then
+    color="#988BC7"
+  else
+    color="#ed4556"
+  fi
+  echo "$color"
+}
+
+[ "$1" = "icon" ] && icon && exit
+[ "$1" = "color" ] && color && exit
+[ "$1" = "percent" ] && percent && exit
+exit

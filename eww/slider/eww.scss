@@ -1,0 +1,55 @@
+// Variable Color's
+$background: #191622;
+$background2: #13101A;
+$foreground: #E1E1E6;
+$currentline: #44475A;
+$selection: #41414D;
+$comment: #483C67;
+
+$black: #24283B;
+$gray: #565F89;
+$green: #67E480;
+$red: #E96379;
+$pink: #FF79C6;
+$magenta: #988BC7;
+$blue: #7AA2F7;
+$cyan: #78D1E1;
+$yellow: #E7DE79;
+$orange: #E89E64;
+
+.music {
+    margin-top: 15px;
+}
+.music_value {
+    border: 3px solid;
+    border-radius: 2px;
+    border-color: $magenta;
+    background-color: $foreground;
+    box-shadow: 0px 0px;
+}
+.music_progress {
+    min-width: 300px;
+    margin: 2px 0px 8px 0px;
+}
+.music_progress trough {
+    background-color: $gray;
+    min-width: 300px;
+    min-height: 3px;
+}
+.music_progress progress {
+    background-color: $magenta;
+    min-height: 3px;
+}
+.music trough highlight {
+    background-color: $magenta;
+    min-height: 3px;
+}
+.music_invis_scale trough {
+    background-color: rgba(0, 0, 0, 0);
+    min-width: 300px;
+    min-height: 18px;
+}
+.music_invis_scale trough highlight {
+    background-color: rgba(256, 0, 0, 0);
+    min-height: 5px;
+}

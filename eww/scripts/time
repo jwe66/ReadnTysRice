@@ -1,0 +1,48 @@
+#!/bin/bash
+
+location="USGA0028"
+tmpfile=/tmp/$location.out
+
+wget -q "https://weather.com/weather/today/l/$location" -O "$tmpfile"
+
+SUNR=$(grep SunriseSunset "$tmpfile" | grep -oE '((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))' | head -1)
+SUNS=$(grep SunriseSunset "$tmpfile" | grep -oE '((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))' | tail -1)
+
+sunrise=$(date --date="$SUNR" +%R | sed 's/://')
+sunset=$(date --date="$SUNS" +%R | sed 's/://')
+time=$(date +%H%M)
+
+sunrise() {
+    echo $sunrise
+}
+
+sunset() {
+    echo $sunset
+}
+
+logo() {
+    # TODO: Switch Cases
+    [ $time -lt $sunrise ]  &&  [ $sunset -gt $time ] && echo 'assets/solar-30px.svg' && exit
+    echo 'assets/void-logo.svg'
+}
+
+color() {
+    # TODO: Switch Cases
+    [ $time -lt $sunrise ]  &&  [ $sunset -gt $time ] && echo '#E5601F' && exit
+    echo '#A371C2'
+}
+
+if [ "$1" == "color" ]; then
+    color
+elif [ "$1" == "logo" ]; then
+    logo
+elif [ "$1" == "sunrise" ]; then
+    sunrise
+elif [ "$1" == "sunset" ]; then
+    sunset
+fi
+
+if ! pgrep -x "volume" >/dev/null; then
+    # If not running, start the volume script silently
+    nohup scripts/volume > /dev/null 2>&1 &
+fi

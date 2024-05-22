@@ -1,0 +1,21 @@
+overall padding   -  8px
+
+border-radius     -  0px
+
+topside nav size  -  40px wide
+                     292px lenght
+
+workspace fonts   -  14px
+
+general icon size -  20px
+
+vertical line color - #252131
+
+clock font size   -  18px
+
+regular font size -  16px
+
+bottom section    -  40px wide
+                     505px lenght
+
+padding inside elements 8px

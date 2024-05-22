@@ -1,0 +1,50 @@
+#!/bin/bash
+
+~/.config/eww/scripts/eww-ws > /tmp/eww_output.txt &
+
+eww_ws_pid=$!
+
+cleanup() {
+    kill $eww_ws_pid
+    rm /tmp/eww_output.txt
+    exit 1
+}
+
+trap cleanup EXIT
+
+while [ ! -f /tmp/eww_output.txt ]; do
+    sleep 0.1
+done
+
+tail -f /tmp/eww_output.txt | while IFS= read -r line; do
+    json_data=$(echo "$line" | sed 's/Received: //')
+    
+    workspaces=$(echo "$json_data" | jq '.workspaces')
+    # echo $workspaces
+
+    existing_ids=$(echo "$workspaces" | jq -r '.[].id')
+
+    new_workspaces=""
+
+    min_id=1
+    max_id=$(echo "$existing_ids" | sort -n | tail -n 1)
+    if [[ max_id -lt 5 ]]; then 
+        max_id=5
+    fi
+
+    for ((id=min_id; id<=max_id; id++)); do
+        if [[ ! "$existing_ids" =~ $id ]]; then
+            new_workspaces+="{\"is_active\":false,\"id\":$id,\"name\":\"$id\",\"monitor\":\"eDP-1\"},"
+        fi
+    done
+
+    if [ -n "$new_workspaces" ]; then
+        new_workspaces=$(echo "[${new_workspaces%,}]")
+        updated_json=$(echo "$workspaces" | jq --argjson new_workspaces "$new_workspaces" '. += $new_workspaces')
+    else
+        updated_json="$workspaces"
+    fi
+
+    sorted_json=$(echo "$updated_json" | jq -c '. |= sort_by(.id)')
+    echo '{"active":1,"workspaces":'$sorted_json'}'
+done

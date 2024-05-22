@@ -1,0 +1,10 @@
+* {
+  all: unset;
+  background-repeat: no-repeat;
+  background-position: center;
+  font-family: "0xProto Nerd Font";
+}
+
+@import "bar/eww.scss";
+@import "spotifyplayer/eww.scss";
+@import "slider/eww.scss";

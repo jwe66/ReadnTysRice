@@ -1,0 +1,49 @@
+#!/bin/bash
+player="playerctl -p $1"
+
+play_pause() {
+    $player play-pause
+    [[ 'Playing' = $($player status) ]] && echo true || echo false
+}
+previous() {
+    $player previous
+}
+next() {
+    $player next
+}
+seek() {
+    $player position $1
+}
+status() {
+    [[ 'Playing' = $($player status) ]] && echo true || echo false
+}
+toggle_shuffle() {
+    if [[ $($player shuffle) == "On" ]]; then
+        $player shuffle off
+        eww update shuffle="false"
+    else
+        $player shuffle on
+        eww update shuffle="true"
+    fi
+}
+get_song_info() {
+    
+    artist=$(/bin/bash -c "$player metadata artist")
+    title=$(/bin/bash -c "$player metadata title")
+    album=$(/bin/bash -c "$player metadata album")
+    status=$(/bin/bash -c "$player status")
+    length=$(/bin/bash -c "$player metadata mpris:length")
+    position=$(/bin/bash -c "$player position")
+
+    length_seconds=$((length / 1000000))
+    
+    echo '{"status": "'$status'", "artist": "'$artist'", "title": "'$title'", "album": "'$album'", "length": '$length_seconds', "position": '$position'}'
+}
+
+[[ "$2" = "play-pause" ]] && play_pause
+[[ "$2" = "previous" ]] && previous
+[[ "$2" = "next" ]] && next
+[[ "$2" = "seek" ]] && seek "$3"
+[[ "$2" = "status" ]] && status
+[[ "$2" = "toggle_shuffle" ]] && toggle_shuffle
+[[ "$2" = "get_song_info" ]] && get_song_info

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Define the command as a string
+cmd='foot -c ~/.config/foot/foot_opaque.ini -T "penis" btop & sleep 0.1 && swaymsg '\''[title="penis"]'\'' floating enable, resize set 800px 600px'
+
+# Run the command using eval and command substitution
+eval "$cmd"

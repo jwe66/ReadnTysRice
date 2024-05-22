@@ -1,0 +1,19 @@
+#!/bin/bash
+
+dbus-monitor --session "type=signal,sender=':1.0',interface='org.freedesktop.Notifications'" |
+while read -r line; do
+    if [[ "$line" =~ "string \"Notification\"" ]]; then
+        read -r line
+        title=$(echo "$line" | grep -oP 'string ".*?"' | cut -d'"' -f2)
+        read -r line
+        body=$(echo "$line" | grep -oP 'string ".*?"' | cut -d'"' -f2)
+        read -r line
+        icon=$(echo "$line" | grep -oP 'string ".*?"' | cut -d'"' -f2)
+
+        echo "Title: $title"
+        echo "Body: $body"
+        echo "Icon: $icon"
+        echo "-----"
+    fi
+done
+

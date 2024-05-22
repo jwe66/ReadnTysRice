@@ -1,0 +1,81 @@
+#!/bin/bash
+
+player="playerctl -p $1"
+playerlist="playerctl -l | grep -x $1"
+TEMP_DIR="/tmp/eww/album_art"
+mkdir -p "$TEMP_DIR"
+
+current_album=""
+current_album_art_path=""
+
+cleanup_interval=300
+last_cleanup_time=$(date +%s)
+last_position=$(cat /tmp/eww/spt_position)
+time_changing=false
+
+format_time() {
+    local seconds="$1"
+    local minutes=$((seconds / 60))
+    seconds=$((seconds % 60))
+    printf "%02d:%02d" "$minutes" "$seconds"
+}
+
+while true; do
+    if [[ -z $(/bin/bash -c "$playerlist") ]]; then
+        echo '{"isRunning": "false", "shuffle": "off", "status": "Stopped", "artist": "", "title": "", "album": "", "length_formatted": "00:00", "length": 1, "position_formatted": "00:00", "position": 0, "albumArt": "assets/currents.jpg", "pid": '$$'}'
+        sleep 0.1
+        continue
+    fi
+    
+    position_raw=$(printf "%.0f" "$(/bin/bash -c "$player position")")
+    if [[ ! "$position" -eq "$last_position" ]] && [[ $(tail -n 1 /tmp/eww/mouse_pressed | jq -r '.pressed') == "false" ]]; then
+        if [[ ${position_raw#-} -lt 2 ]]; then
+            position_raw=$position
+        else
+            time_changing=true
+        fi
+    fi
+
+    if [[ $time_changing ]]; then
+        if [[ ${position_raw#-} -gt 2 ]]; then
+            position_raw=$position
+        else
+            time_changing=false
+        fi
+    fi
+
+    current_time=$(date +%s)
+    elapsed_time=$((current_time - last_cleanup_time))
+
+    if [[ "$elapsed_time" -ge "$cleanup_interval" ]]; then
+        find "$TEMP_DIR" -type f -not -name "*.jpg" -delete
+        last_cleanup_time="$current_time"
+    fi
+
+    artist=$(/bin/bash -c "$player metadata artist")
+    title=$(/bin/bash -c "$player metadata title")
+    album=$(/bin/bash -c "$player metadata album")
+    status=$(/bin/bash -c "$player status")
+    shuffle=$(/bin/bash -c "$player shuffle")
+    length_raw=$(/bin/bash -c "$player metadata mpris:length")
+    length_seconds=$((length_raw / 1000000))
+
+    length_formatted=$(format_time "$length_seconds")
+    position_formatted=$(format_time "$position_raw")
+
+    if [[ "$album" != "$current_album" ]]; then
+        current_album="$album"
+        album_art_url=$(/bin/bash -c "$player metadata mpris:artUrl" | sed 's/open.spotify.com/i.scdn.co/')
+        new_album_art_path="$TEMP_DIR/$album.jpg"
+        curl --compressed -s -o "$new_album_art_path" "$album_art_url"
+
+        [[ -f "$current_album_art_path" ]] && rm "$current_album_art_path"
+
+        current_album_art_path="$new_album_art_path"
+    fi
+
+    output=$(echo '{"isRunning": "true", "shuffle": "'$shuffle'", "status": "'$status'", "artist": "'$artist'", "title": "'$title'", "album": "'$album'", "length_formatted": "'$length_formatted'", "length": '$length_seconds', "position_formatted": "'$position_formatted'", "position": '$position_raw', "albumArt": "'$current_album_art_path'", "pid": '$$'}' | jq -c .)
+
+    echo "$output"
+    sleep 0.1
+done

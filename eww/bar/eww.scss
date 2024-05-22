@@ -1,0 +1,124 @@
+// Variable Color's
+$background: #191622;
+$background2: #13101A;
+$foreground: #E1E1E6;
+$currentline: #44475A;
+$selection: #41414D;
+$comment: #483C67;
+
+$black: #24283B;
+$gray: #565F89;
+$green: #67E480;
+$red: #E96379;
+$pink: #FF79C6;
+$magenta: #988BC7;
+$blue: #7AA2F7;
+$cyan: #78D1E1;
+$yellow: #E7DE79;
+$orange: #E89E64;
+
+// EWW BAR
+.eww_bar {
+    background-color: $background;
+}
+
+// Launcher
+.launcher_icon{
+    margin: 16px 0px 5px 0px;
+}
+
+// Spotify Dashboard
+.spt_dashboard {
+    padding: 1px 1px 1px 1px;
+    margin: 16px 4px 0px 4px;
+}
+
+//Spotify
+.spt_bar_progress {
+    min-height: 42px;
+    min-width: 42px;
+}
+.spt_bar_progress trough {
+    background-color: #282530;
+    min-height: 42px;
+    min-width: 42px;
+}
+.spt_bar_progress progress {
+    background-color: #373441;
+    min-width: 42px;
+}
+
+// Workspaces
+.workspaces {
+    margin: -5px 0px -5px 0px;
+    font-size: 14px;
+    // font-weight: 700;
+    .workspace-box {
+        border: 1px solid;
+        color: $magenta;
+        background: #252131;
+        margin: 5px 0px 5px 0px;
+        font-weight: 700;
+        min-height: 24px;
+        min-width:  32px;
+    }
+    .selected {
+        border: 1px solid;
+        margin: 5px 0px 5px 0px;
+        min-width: 32px;
+        min-height: 24px;
+        font-weight: 700;
+        color: $background;
+        background: $foreground;
+        border-color: $foreground;
+    }
+}
+
+// Separator
+.separator {
+    margin: 8px 0px 8px 0px;
+}
+
+// Control Panel
+.control {
+    font-family: "0xProto Nerd Font";
+    font-size: 20px;
+    margin-top: -250px;
+}
+// Battery
+.bat_icon{
+    margin-bottom: 2px;
+}
+// CPU and Memory
+.control_font {
+    font-family: "0xProto Nerd Font";
+    font-size: 0.9em;
+    color: $magenta;
+}
+
+// Volume
+.volbar trough {
+    background-color: $gray;
+    min-height: 80px;
+    min-width: 3px;
+    margin: 0px 0px .3rem 0px;
+}
+
+.volbar trough highlight {
+    background-color: $magenta;
+    border-color: $magenta;
+}
+
+// Clock
+.time {
+    font-size: 22px;
+}
+
+// Poewr Button
+.button-off{
+    background-image: url("assets/shut-down-line.svg");
+    background-size: 23px;
+    background-color: #5A4B81;
+    margin: 0px 8px 8px 8px;
+    min-height: 40px;
+}

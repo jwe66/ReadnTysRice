@@ -1,0 +1,38 @@
+(defwidget better_slider  [flipped 
+                           orientation
+                           timeout
+                           onchange
+                           class 
+                           min 
+                           max 
+                           value
+                           width 
+                           knob_width
+                           height]
+  (box    :space-evenly "false"
+          :halign "center"
+          :orientation "h"
+          :class class
+
+    (overlay
+      (scale    :class "${class}_invis_scale"
+                :orientation orientation
+                :flipped flipped
+                :round-digits 0
+                :max max
+                :min min
+                :value value
+                :timeout "0.1s"
+                :onchange "${onchange}")
+      (progress :class "${class}_progress"
+                :halign "center"
+                :orientation orientation
+                :value "${100 * (value - min) / max}")
+      (box      :space-evenly "false"
+        (box    :width {round(width * (value - min) / max - (knob_width + 0.5), 0)})
+        (box      :class "${class}_value"
+                  :active true
+                  :style "margin: ${knob_width}px 0px ${knob_width}px 0px"
+                  :width "${height + 15 - (2 * knob_width)}")))))
+(defvar val1 0)
+(defvar hovered false)

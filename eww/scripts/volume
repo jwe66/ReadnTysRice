@@ -1,0 +1,38 @@
+#!/bin/bash
+
+pipe=/tmp/volume_pipe
+lock_file=/tmp/volume_lock
+
+if [[ ! -p $pipe ]]; then
+    mkfifo $pipe
+fi
+
+function process_queue() {
+    exec 9>"$lock_file"
+    flock -n 9 || return
+
+    while [ ${#queue[@]} -gt 0 ]; do
+        volume=${queue[0]}
+        amixer -D pulse sset Master ${volume}%
+        echo "Volume set to ${volume}%"
+        queue=("${queue[@]:1}")
+        lastvolume=$volume
+    done
+
+    flock -u 9
+    exec 9>&-
+}
+
+lastline=0
+while true; do
+    if read line <$pipe; then
+        queue+=("$line")
+        process_queue
+    else
+        echo "No data available from the pipe."
+        continue
+    fi
+
+    sleep 0.1
+done
+

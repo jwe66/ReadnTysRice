@@ -1,0 +1,90 @@
+// * {border: 1px solid}
+// Variable Color's
+$background: #191622;
+$background2: #13101A;
+$foreground: #E1E1E6;
+$currentline: #44475A;
+$selection: #41414D;
+$comment: #483C67;
+
+$black: #24283B;
+$gray: #565F89;
+$green: #67E480;
+$red: #E96379;
+$pink: #FF79C6;
+$magenta: #988BC7;
+$blue: #7AA2F7;
+$cyan: #78D1E1;
+$yellow: #E7DE79;
+$orange: #E89E64;
+
+.spt {
+    background-color: rgba(25, 22, 34, 0);
+}
+
+.spt_background {
+    border: 2px solid;
+    border-radius: 2px;
+    border-color: $magenta;
+    background: radial-gradient(ellipse, rgba(25, 22, 34, 0.75) 0%, rgba(25, 22, 34, 1) 100%);
+}
+
+.spt_background_image {
+   margin: 2px;
+}
+
+.spt_widget {
+    margin: 22px 22px 12px 22px;
+}
+
+.spt_song_tel {
+    margin-top: 10px;
+    font-weight: 700;
+    .song_name {
+        color: $foreground;
+        font-size: 14px;
+    }
+    .song_artist {
+        color: $foreground;
+        font-size: 10px;
+        margin-top: 2px;
+        margin-bottom: 14px;
+    }
+}
+
+.spt_pannel {
+    margin: 16px 0px 14px 0px;
+    .spt_shuffle_true {
+        padding: 0px 4px 0px 4px;
+        margin: 12px 36px 12px 0px;
+        background-color: $foreground;
+        border-radius: 4px;
+    }
+    .spt_shuffle_false {
+        padding: 0px 4px 0px 4px;
+        margin: 12px 36px 12px 0px;
+        border-radius: 4px;
+    }
+    .spt_controls {
+        margin-right: 40px;
+        .spt_pause {
+            border-radius: 30px;
+            padding: 10px;
+            background-color: $magenta;
+        }
+    }
+}
+.spt_progress trough {
+    background-color: $gray;
+    min-width: 300px;
+    min-height: 3px;
+}
+
+.spt_progress trough highlight {
+    background-color: $magenta;
+    border-color: $magenta;
+}
+.spt_time_numbers {
+    margin-top: -16px;
+    font-size: 11px;
+}

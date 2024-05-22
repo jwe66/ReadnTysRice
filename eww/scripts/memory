@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Get total and used memory in kilobytes from the free command
+total_memory=$(free -k | awk 'NR==2 {print $2}')
+used_memory=$(free -k | awk 'NR==2 {print $3}')
+
+# Calculate memory usage in gigabytes and round it to the nearest tenth
+memory_usage_gb=$(echo "scale=0; 10 * $used_memory / (1024 * 1024)" | bc -l)
+
+echo ${memory_usage_gb}
+
