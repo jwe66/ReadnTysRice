@@ -1,1 +1,3 @@
 *.yuck linguist-language=Yuck
+*.gitattributes linguist-detectable=true
+*.gitattributes linguist-documentation=false
